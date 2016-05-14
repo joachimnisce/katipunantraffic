@@ -1,0 +1,2 @@
+Katipunan Traffic.
+  The data visualization uses data sourced from the MMDA interaksyon website. The data covers the traffic situation of four stations in Katipunan Ave -- CP Garcia, Miriam College, Ateneo de Manila University, and Xavierville from January 2015-December 2015. "northbound.html" visualizes the 2015 average traffic situation per hour of northbound vehicles in the sequence stated above. "southbound.html" visualizes the 2015 average traffic situation per hour of southbound vehicles in the sequence stated above. 
