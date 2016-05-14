@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href='https://fonts.googleapis.com/css?family=Raleway:100' rel='stylesheet' type='text/css'>
+<style>
+
+
+@font-face {
+    font-family: 'SlimJoe';
+    src: url('Slim Joe.otf') format ('otf');
+}
+
+body {
+
+  background: linear-gradient(180deg, #e80c7a, #ff9218);
+  background-size: 600% 600%;
+  -webkit-animation: Gradient 19s ease infinite;
+  -moz-animation: Gradient 19s ease infinite;
+  animation: Gradient 19s ease infinite;
+}
+  
+    
+    @-webkit-keyframes Gradient {
+    0%{background-position:49% 50%}
+    50%{background-position:52% 100%}
+    100%{background-position:49% 0%}
+  }
+  @-moz-keyframes Gradient {
+    0%{background-position:49% 0%}
+    50%{background-position:52% 100%}
+    100%{background-position:49% 0%}
+  }
+  @keyframes Gradient { 
+    0%{background-position:49% 0%}
+    50%{background-position:52% 100%}
+    100%{background-position:49% 0%}
+  }
+
+ /* font: 10px sans-serif;
+  background: linear-gradient( #E80C7A, #FF9218);
+*/
+
+.badword{
+  color: blue;
+
+}
+
+.Header {
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+  font-size: 50px;
+  text-decoration: line-through;
+
+
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: #67BDC8;
+}
+
+.bar:hover {
+  fill: #A693F1 ;
+}
+
+.x.axis path {
+  
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+</style>
+<body>
+<h1 class='Header'>-        BLEEP       -</h1>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+// Canvas Margins
+var margin = {top: 20, right: 20, bottom: 30, left: 255},
+    width = 1120 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// X and Y Scales
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+// X and Y Axis
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(6);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return  "<h1 class='badword'>" + d.word + "</h1>"  + d.value + 
+    "<div class='row'>"+ "SOSE: "+ d.SOSE+ "</div>" + "<div class='row'>"+ "SOSS: " + d.SOSS + "</div>"  + "<div class='row'>"+ "SOM: " + d.SOM_VALUE + "</div>"  + "<div class='row'>"+ "SOSS: "+ d.SOH + "</div>"
+
+
+
+  })
+
+// Creating the SVG (Canvas) w/ Margins
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//Input Data from CSV
+d3.csv("DataOrderedCurse3.csv", type, function(error, data) {
+  if (error) throw error;
+
+  x.domain(data.map(function(d) { return d.word; }));
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+
+//Appending the X axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.call(tip);
+
+
+//Apending the Y axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Frequency");
+
+//Apending the bars
+  svg.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.word); })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
+});
+
+function type(d) {
+  d.value = + d.value;
+  return d;
+}
+
+</script>

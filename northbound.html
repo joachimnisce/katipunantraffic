@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="d3/d3.min.js" charset="utf-8"></script>
+    <script src="d3/d3.js" charset="utf-8"></script>
+    <script src="../bootstrap/css/bootstrap.min.css" charset="utf-8"></script>
+    <body style="background-color:lightgrey;">
+
+  <!-- Google Fonts -->
+
+<link href='https://fonts.googleapis.com/css?family=Raleway:100' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Leckerli+One' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Anton' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya+Sans:400,100' rel='stylesheet' type='text/css'>
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Testing out Marked -->
+    <script src="marked/lib/marked.js"></script>
+
+<!-- Animate.css -->
+      <link rel="stylesheet" href="animate.min.css">
+
+   <title>Katipunan Traffic</title>
+    
+  </head>
+  <body>
+
+
+<div class="container">
+
+<h1 style="font-family:source sans pro; color:white; font-size: 90px; background-color: #ff6e40;" align = "center">KATIPUNAN TRAFFIC <p style = "font-family:raleway; color:white; font-size: 15px;" align = "right"> by Joachim Nisce and Jem Tan</p></h1>
+
+<p style="font-family:raleway; color:grey; font-size: 25px;" align = "center"> A simple data visualization that takes the average traffic situation of Katipunan Avenue from January 2015-January 2016 and lays it out to look like a stoplight. Each circle is designated to a segment of Katipunan Ave: the topmost circle is for CP Garcia, followed by Miriam College, then Ateneo de Manila University, and then finally, Xavierville.  </p></div>
+     
+ 
+  <p style="font-family:raleway; color:white; font-size: 35px;" align = "CENTER">NORTHBOUND | <body link="gray"><A HREF="southbound.html" style="font-family:raleway; color:white; font-size: 35px;" align = "center">GO TO SOUTHBOUND</P></A>
+
+
+<p style="font-family:PACIFICO; color:gray; font-size: 30px;" align = "center">Select hour of the day and day of the week  </p>
+
+
+<div class="input-field" align="center">
+
+    <select id="hour" name = "hour_of_the_day">
+      <option>0</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+      <option>7</option>
+      <option>8</option>
+      <option>9</option>
+      <option>10</option>
+      <option>11</option>
+      <option>12</option>
+      <option>13</option>
+      <option>14</option>
+      <option>15</option>
+      <option>16</option>
+      <option>17</option>
+      <option>18</option>
+      <option>19</option>
+      <option>20</option>
+      <option>21</option>
+      <option>22</option>
+      <option>23</option>
+    </select>
+    <select id="day">
+      <option>Monday</option>     <!-- you can put value in the html -->
+      <option>Tuesday</option>
+      <option>Saturday</option>
+      <option>Sunday</option>
+    </select>
+
+    <section class="about">
+
+
+
+
+    <script>
+
+
+      var menu = d3.select("#hour").on("change", redraw);
+      var day = d3.select('#day').on("change",redraw);
+      var canvas = d3.select("body").append("svg")
+               .attr("width", 1000).attr("height", 500);
+
+    function fcolor(this_status) //associate the number with a color
+    {
+        var this_color = 1
+        if(this_status <= 1.3) this_color = "#3CB371";
+        if(this_status >= 1.31 && this_status <= 1.6) this_color = "#FF8C00";
+        if(this_status >= 1.61) this_color = "#8B0000"; 
+        return this_color
+    } 
+
+    function fday(this_status) //associate the number with the day
+    {
+        var this_day=0
+        if (this_status == "Monday" ) 
+        {
+            this_day = 0;
+        }
+        else if (this_status == "Tuesday")
+        {
+          this_day = 1;
+        }
+        else if (this_status == "Saturday")
+        {
+          this_day = 5;
+        }
+        else if (this_status == "Sunday")
+        {
+          this_day = 6;
+        };
+
+        return this_day
+    } 
+
+    function redraw()
+    {
+      var selected_item = menu.property("value"); //value is the hour of the day. yung nasa dropdown.
+      //hh = 7 //+selected_item //+selected_item
+      var hh = selected_item;
+      var selected_day = fday(day.property("value"));
+      var dd = selected_day;
+      console.log(selected_item)
+      console.log(hh)
+      console.log(dd);
+      d3.csv("status_ateneo_by_hour_and_daytype.csv", function(error,data){
+        if (error) throw error;
+        filtered_data1 = data.filter(function(d){return( (d.hour == hh) && (d.daytype == dd));}) //and dd day of the week extension
+       console.log(filtered_data1)
+
+       d3.selectAll("circle").remove()
+
+       canvas.selectAll("circle")
+            .data(filtered_data1)
+            .enter()
+              .append("circle")
+              .attr("cx", 600)
+              .attr("cy", function (d, i) {return (i+1)*80;})
+              .attr("r", 30)
+              .attr("fill", function(d) {return fcolor(d.statusN);})
+      })
+    }
+
+
+    d3.csv("status_ateneo_by_hour_and_daytype.csv", function (error, data){
+
+        if (error) throw error;
+        //on change pumapalit nalang sa fill.
+        var filtered_data = ("green", "Monday");
+        var hh = 1;
+        var dd = "Monday";
+        menu.property("value", hh)
+        filtered_data1 = data.filter(function(d){return( (d.hour == hh) && (d.daytype == dd));})
+
+
+        //time to make a chart
+        canvas.selectAll("circle")
+            .data(filtered_data)
+            .enter()
+              .append("circle")
+              .attr("cx", 600 )
+              .attr("cy", function (d, i) {return (i+1)*80;})
+              .attr("r", 30)
+              .attr("fill", function(d) {return fcolor(d.statusN);})
+
+      })
+      //exit the case is. more circles than datapoints 11 circle and 10 datapoints.
+
+    </script>
+  </body>
+</html>
+
+
+<!-- questions for people:
+1) how do you make two columns of circles? bootstrap the thing to col md-6?
+2)how do put two data filters in the accessor fucntion?
+3) how to implement a third dropdown?
+4) can i loop the present dropdown? -->
